@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const TRAINERS_URL = `${BASE_URL}/trainers`
     const POKEMONS_URL = `${BASE_URL}/pokemons`
 
+    // Create Trainer Cards
     const fetchTrainers = () => {
         fetch(TRAINERS_URL)
             .then(resp => resp.json())
@@ -28,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const button = document.createElement('button')
         button.dataset.trainerId = trainer.id
+        button.classList = 'add'
         button.textContent = 'Add Pokemon'
         div.appendChild(button)
 
@@ -36,22 +38,70 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const renderPokemons = (pokemons, div) => {
         const ul = document.createElement('ul')
+        div.appendChild(ul)
 
         pokemons.forEach(pokemon => {
-            const li = document.createElement('li')
-            li.textContent = `${pokemon.nickname} (${pokemon.species}) `
-
-            const button = document.createElement('button')
-            button.className = 'release'
-            button.dataset.pokemonId = pokemon.id
-            button.textContent = 'Release'
-            li.appendChild(button)
-
-            ul.appendChild(li)
+            renderOnePokemon(pokemon, ul)
         })
-        div.appendChild(ul)
+    }
+
+    const renderOnePokemon = (pokemon, ul) => {
+        const li = document.createElement('li')
+        li.textContent = `${pokemon.nickname} (${pokemon.species}) `
+
+        const button = document.createElement('button')
+        button.className = 'release'
+        button.dataset.pokemonId = pokemon.id
+        button.textContent = 'Release'
+        li.appendChild(button)
+
+        ul.appendChild(li)
+    }
+
+    // Add a new Pokemon
+
+    const handleButtons = () => {
+        document.addEventListener('click', e => {
+            if (e.target.matches('.add')) {
+                if (e.target.nextElementSibling.children.length == 6) {
+                    alert('Team is Full')
+                } else {
+                    postPokemon(e.target)
+                }
+            }
+            if (e.target.matches('.release')) {
+                console.log(e.target)
+            }
+        })
+    }
+
+    // if team is full dont do a request
+
+    const postPokemon = addButton => {
+        console.log(addButton)
+
+        const trainerId = addButton.dataset.trainerId
+
+        const configurationObject = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+            body: JSON.stringify({
+                trainer_id: trainerId,
+            }),
+        }
+
+        fetch(POKEMONS_URL, configurationObject)
+            .then(resp => resp.json())
+            .then(data => {
+                console.log('post request sent')
+                console.log(data)
+                renderOnePokemon(data, addButton.nextElementSibling)
+            })
     }
 
     fetchTrainers()
-    // fetchPokemon()
+    handleButtons()
 })
