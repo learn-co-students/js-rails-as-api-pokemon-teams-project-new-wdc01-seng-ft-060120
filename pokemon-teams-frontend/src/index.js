@@ -66,20 +66,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (e.target.nextElementSibling.children.length == 6) {
                     alert('Team is Full')
                 } else {
-                    postPokemon(e.target)
+                    addPokemon(e.target)
                 }
             }
             if (e.target.matches('.release')) {
-                console.log(e.target)
+                // console.log(e.target)
+                removePokemon(e.target)
             }
         })
     }
 
     // if team is full dont do a request
 
-    const postPokemon = addButton => {
-        console.log(addButton)
-
+    const addPokemon = addButton => {
         const trainerId = addButton.dataset.trainerId
 
         const configurationObject = {
@@ -97,9 +96,25 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(resp => resp.json())
             .then(data => {
                 console.log('post request sent')
-                console.log(data)
                 renderOnePokemon(data, addButton.nextElementSibling)
             })
+    }
+
+    const removePokemon = releaseButton => {
+        const pokemonId = releaseButton.dataset.pokemonId
+
+        fetch(POKEMONS_URL + '/' + pokemonId, { method: 'DELETE' })
+            .then(resp => resp.json())
+            .then(data => {
+                console.log(data)
+                removePokemonFromDOM(data)
+            })
+    }
+
+    const removePokemonFromDOM = data => {
+        const liToDelete = document.querySelector(`button[data-pokemon-id = "${data.id}"]`)
+        liToDelete.parentElement.remove()
+        console.log(liToDelete.parentElement)
     }
 
     fetchTrainers()
