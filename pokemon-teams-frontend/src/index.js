@@ -8,13 +8,9 @@ document.addEventListener("DOMContentLoaded", ()=> {
 function renderTrainers(trainerArray){
     trainerArray.forEach(trainerObj => {
         renderTrainer(trainerObj)
-    })
-}
-
-function renderPokemons(pokemonArray) {
-    pokemonArray.forEach(pokemonObj => {
-        renderPokemon(pokemonObj)
-
+        trainerObj.pokemons.forEach(pokemon => {
+            renderPokemon(pokemon)
+        })
     })
 }
 
@@ -29,12 +25,10 @@ function renderTrainer(trainerObj) {
     button.dataset.id = trainerObj.id
     button.innerText = 'Add Pokemon'
     trainerDiv.appendChild(button)
-   const ul = document.createElement('ul')
-   trainerDiv.appendChild(ul)
-   const main = document.querySelector('main')
-   main.appendChild(trainerDiv)
-   
-
+    const ul = document.createElement('ul')
+    trainerDiv.appendChild(ul)
+    const main = document.querySelector('main')
+    main.appendChild(trainerDiv)
 
 }
 
@@ -44,10 +38,10 @@ function renderPokemon(pokemonObj) {
     pokeButton.className = "release"
     pokeButton.dataset.id = pokemonObj.id
     li.innerHTML = `${pokemonObj.nickname} (${pokemonObj.species}) <button class= ${pokeButton.className} data-pokemon-id= ${pokeButton.dataset.id}>Release</button>` 
-    const ul = document.querySelector('ul')
-    // console.log(ul)
-    // ul.appendChild(li)
-    // console.log(ul)
+    const trainerId = pokemonObj.trainer_id
+    const ul = document.querySelectorAll('div[data-id]')[trainerId-1]
+    ul.appendChild(li)
+
 }    
 
 
@@ -55,21 +49,16 @@ const getTrainers = () => {
     fetch(TRAINERS_URL)
     .then(response => response.json())
     .then(trainers => {
-     renderTrainers(trainers)
+        renderTrainers(trainers);
     }) 
 }
 
-const getPokemons = () => {
-    fetch(POKEMONS_URL)
-    .then(response => response.json())
-    .then(pokemons => {
-        renderPokemons(pokemons)
-    })
-}
-
-
-getPokemons()
 getTrainers()
 
 })
 
+
+document.addEventListener("click", (event) => {
+    console.log(event.target)
+
+})
